@@ -2,6 +2,13 @@
 
 This plugin integrates FM-Agent into Claude Code for automated code reasoning and bug detection. FM-Agent uses LLM-based Hoare-style verification to analyze codebases.
 
+## How to install
+
+```
+/plugin marketplace add haoran-ding/FM-Agent-Plugin
+/plugin install fm-agent-plugin@fm-agent-plugin
+```
+
 ## Available Commands
 
 | Command | Description |
