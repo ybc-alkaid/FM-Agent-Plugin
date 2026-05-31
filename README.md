@@ -2,6 +2,11 @@
 
 This plugin integrates FM-Agent into Claude Code for automated code reasoning and bug detection. FM-Agent uses LLM-based Hoare-style verification to analyze codebases.
 
+## Prerequisites
+
+- Ubuntu 22.04+ or compatible Linux distribution
+- Python 3.12+
+
 ## How to install
 
 ```
@@ -15,12 +20,12 @@ This plugin integrates FM-Agent into Claude Code for automated code reasoning an
 |---------|-------------|
 | `/fm-agent:install` | Clone FM-Agent to the plugin data directory |
 | `/fm-agent:config` | Show/modify FM-Agent configuration |
-| `/fm-agent:run` | Execute FM-Agent analysis on current project (background) |
 | `/fm-agent:auto-fix` | Run FM-Agent verification-repair loop for the whole codebase |
+| `/fm-agent:run` | Execute FM-Agent analysis on current project without repairing bugs (background) |
 | `/fm-agent:diagnose` | View bug analysis results |
 | `/fm-agent:help` | Show help information |
 
-## install
+### install
 
 Clone FM-Agent from official repository to the plugin data directory (`${CLAUDE_PLUGIN_DATA}/FM-Agent/`):
 ```bash
@@ -28,7 +33,7 @@ git clone https://github.com/haoran-ding/FM-Agent.git
 ```
 Then run `${CLAUDE_PLUGIN_DATA}/FM-Agent/install.sh` to install dependencies.
 
-## config
+### config
 
 Read and modify FM-Agent settings split across two files:
 - API key → `${CLAUDE_PLUGIN_DATA}/.env` (sourced at runtime via `source .env`)
@@ -49,16 +54,7 @@ Workflow:
 - `LLM_OPENROUTER_API_KEY` - OpenRouter API key (stored in `.env`)
 - `LLM_OPENROUTER_API_BASE_URL` - OpenRouter API endpoint
 
-## run
-
-Execute FM-Agent from the plugin data directory to analyze the current project directory (`./`):
-- Verify `${CLAUDE_PLUGIN_DATA}/.env` exists and contains the API key (otherwise direct the user to `/fm-agent:config`)
-- If `./fm_agent/` already exists, ask the user whether to **resume** (use `--resume`) or **start fresh** (delete and rerun)
-- Launch as a background task so the session is not blocked
-- Schedule periodic polling via the `loop` skill to detect completion, then notify the user with success or failure.
-
-
-## auto-fix
+### auto-fix
 
 Run the FM-Agent verification-repair-review loop with `/fm-agent:auto-fix <max-iterations>`.
 
@@ -76,19 +72,22 @@ Session artifacts live under `./fm_agent_plugin/`:
 - `./fm_agent_plugin/auto-fix-<session-id>.md` - Human-readable session log
 - `./fm_agent_plugin/auto-fix-active.json` - Active-session lock
 
-## diagnose
+### run
+
+Execute FM-Agent from the plugin data directory to analyze the current project directory (`./`):
+- Verify `${CLAUDE_PLUGIN_DATA}/.env` exists and contains the API key (otherwise direct the user to `/fm-agent:config`)
+- If `./fm_agent/` already exists, ask the user whether to **resume** (use `--resume`) or **start fresh** (delete and rerun)
+- Launch as a background task so the session is not blocked
+- Schedule periodic polling via the `loop` skill to detect completion, then notify the user with success or failure.
+
+### diagnose
 
 Read FM-Agent output from `./fm_agent/`:
 - **Summary first**: Show `bug_validation/summary.json` with totals
 - **Details on request**: Show individual bug reports (`<source>--<function>.md`)
 - Bug reports include: specification claim, actual behavior, code evidence, trigger condition, probe script, probe output
 
-## Prerequisites
-
-- Ubuntu 22.04+ or compatible Linux distribution
-- Python 3.12+
-
-## Output Directory
+### Output Directory
 
 Analysis results in `./fm_agent/`:
 - `bug_validation/summary.json` - Aggregated summary
