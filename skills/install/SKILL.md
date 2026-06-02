@@ -27,7 +27,7 @@ if [ -d "${CLAUDE_PLUGIN_DATA}/FM-Agent" ]; then
   cd "${CLAUDE_PLUGIN_DATA}/FM-Agent" && git pull
 else
   echo "Cloning FM-Agent..."
-  cd "${CLAUDE_PLUGIN_DATA}" && git clone https://github.com/haoran-ding/FM-Agent.git
+  cd "${CLAUDE_PLUGIN_DATA}" && git clone https://github.com/fmagent-project/FM-Agent.git
 fi
 ```
 

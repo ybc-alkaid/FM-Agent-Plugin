@@ -1,16 +1,16 @@
 # Claude Code Plugin of FM-Agent
 
-This plugin integrates [FM-Agent](https://github.com/haoran-ding/FM-Agent) into Claude Code for automated code reasoning and bug repair.
+This plugin integrates [FM-Agent](https://github.com/fmagent-project/FM-Agent) into Claude Code for automated code reasoning and bug repair.
 
 ## Prerequisites
 
 - Ubuntu 22.04+ or compatible Linux distribution
-- Python 3.12+
+- Python 3.10+
 
 ## How to install
 
 ```
-/plugin marketplace add haoran-ding/FM-Agent-Plugin
+/plugin marketplace add fmagent-project/FM-Agent-Plugin
 /plugin install fm-agent-plugin@fm-agent-plugin
 ```
 
@@ -29,7 +29,7 @@ This plugin integrates [FM-Agent](https://github.com/haoran-ding/FM-Agent) into 
 
 Clone FM-Agent from official repository to the plugin data directory (`${CLAUDE_PLUGIN_DATA}/FM-Agent/`):
 ```bash
-git clone https://github.com/haoran-ding/FM-Agent.git
+git clone https://github.com/fmagent-project/FM-Agent.git
 ```
 Then run `${CLAUDE_PLUGIN_DATA}/FM-Agent/install.sh` to install dependencies.
 

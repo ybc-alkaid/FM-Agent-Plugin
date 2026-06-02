@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Claude Code plugin that integrates [FM-Agent](https://github.com/haoran-ding/FM-Agent) — a framework for fully automated reasoning on large-scale codebases using LLM-based Hoare-style verification for bug detection.
+This is a Claude Code plugin that integrates [FM-Agent](https://github.com/fmagent-project/FM-Agent) — a framework for fully automated reasoning on large-scale codebases using LLM-based Hoare-style verification for bug detection.
 
 ## Plugin Structure
 

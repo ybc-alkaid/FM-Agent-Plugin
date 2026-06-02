@@ -26,7 +26,7 @@ This plugin integrates FM-Agent into Claude Code for automated code reasoning an
 
 Clone FM-Agent from official repository to the plugin data directory (`${CLAUDE_PLUGIN_DATA}/FM-Agent/`):
 ```bash
-git clone https://github.com/haoran-ding/FM-Agent.git
+git clone https://github.com/fmagent-project/FM-Agent.git
 ```
 Then run `${CLAUDE_PLUGIN_DATA}/FM-Agent/install.sh` to install dependencies.
 
@@ -95,7 +95,7 @@ After writing the export, the skill asks the user whether to run incremental FM-
 ## Prerequisites
 
 - Ubuntu 22.04+ or compatible Linux distribution
-- Python 3.12+
+- Python 3.10+
 
 ## Output Directory
 

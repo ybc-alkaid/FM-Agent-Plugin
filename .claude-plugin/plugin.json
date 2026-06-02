@@ -6,8 +6,8 @@
     "name": "yuesong-feng",
     "email": "yuesong-feng@foxmail.com"
   },
-  "homepage": "https://github.com/haoran-ding/FM-Agent-Plugin",
-  "repository": "https://github.com/haoran-ding/FM-Agent-Plugin",
+  "homepage": "https://github.com/fmagent-project/FM-Agent-Plugin",
+  "repository": "https://github.com/fmagent-project/FM-Agent-Plugin",
   "license": "Apache-2.0",
   "keywords": [
     "FM-Agent",
