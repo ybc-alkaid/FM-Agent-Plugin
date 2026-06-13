@@ -76,7 +76,7 @@ FM-Agent configured successfully.
 
 Next steps:
 /fm-agent:run-full - Run full-project FM-Agent analysis for current codebase
-/fm-agent:run-incremental --incremental - Run incremental FM-Agent analysis for current codebase
+/fm-agent:run-incremental --incremental [<intent-msg>] - Run incremental FM-Agent analysis for current codebase
 /fm-agent:diagnose - Diagnose bugs found by FM-Agent
 ```
 

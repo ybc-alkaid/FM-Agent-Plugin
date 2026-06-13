@@ -1,7 +1,7 @@
 ---
 name: FM-Agent-Help
 description: Use when the user asks to "fm-agent help", "how to use fm-agent", "fm-agent usage", "fm-agent commands", or needs information about FM-Agent plugin capabilities.
-version: 0.3.0
+version: 0.3.2
 ---
 
 Provide help and usage information for the FM-Agent plugin.
@@ -60,9 +60,9 @@ The skill also exposes an **orchestration mode** used by `/fm-agent:auto-fix` to
 ## run-incremental
 
 Execute incremental FM-Agent analysis from the plugin data directory against the current project directory (`./`):
-- Takes one argument: `--incremental`
+- Takes one required argument, `--incremental`, and an optional `<intent-msg>`
 - Verifies `$HOME/.fm-agent-plugin/.env` exists and contains the API key (otherwise direct the user to `/fm-agent:config`)
-- Generates the intent file from export summaries for commits after the last analyzed commit recorded in `fm_agent/version.log` through `HEAD`
+- Generates the intent file from optional user-provided intent plus export summaries for commits after the last analyzed commit recorded in `fm_agent/version.log` through `HEAD`
 - Runs FM-Agent with `--incremental <generated-intent-file>`
 - Launches as a background task so the session is not blocked
 
@@ -77,11 +77,13 @@ Read FM-Agent output from `./fm_agent/`:
 
 ## auto-fix
 
-Run the FM-Agent verification-repair-review loop with `/fm-agent:auto-fix <max-iterations>`.
+Run the FM-Agent verification-repair-review loop with `/fm-agent:auto-fix [<intent-msg>]`.
 
 Usage and constraints:
 - The loop starts from the current project working tree
 - The loop runs one FM-Agent verification round first: `run-full` if `fm_agent/` is missing, or `run-incremental --incremental` if `fm_agent/` and `fm_agent/version.log` exist
+- If `<intent-msg>` is provided and incremental verification is selected, auto-fix passes it to `run-incremental --incremental <intent-msg>`
+- The skill asks for the maximum number of coding-agent repair rounds before starting session state changes
 - If FM-Agent reports bugs, the plugin launches one dedicated coding-agent repair sub-session for the full bug batch
 - After each repair round, the plugin launches one dedicated reviewer sub-session to decide whether the reported bugs are fixed
 - If the reviewer passes the repair, the loop exits; if the reviewer returns feedback, the next coding-agent round receives that feedback and continues repairing

@@ -1,7 +1,7 @@
 ---
 name: FM-Agent-Run-Incremental
-description: Use when the user asks to run incremental FM-Agent analysis or when auto-fix needs incremental verification for a project with prior analysis state. Takes one argument --incremental.
-version: 0.1.0
+description: Use when the user asks to run incremental FM-Agent analysis or when auto-fix needs incremental verification for a project with prior analysis state. Takes --incremental and an optional intent message.
+version: 0.2.0
 allowed-tools: Bash(*), Skill
 ---
 
@@ -13,21 +13,23 @@ This skill runs FM-Agent from the plugin data directory `$HOME/.fm-agent-plugin/
 
 ## Arguments
 
-This skill takes exactly one argument:
+This skill takes one required argument and one optional argument:
 
 - `--incremental`: run incremental analysis
+- `<intent-msg>`: optional user-provided intent message describing what changed or what should be analyzed
 
-Do not accept an intent-file argument from the user. The skill always generates the intent file from exported summary files written by `fm-agent:export`.
+The skill always generates the intent file from exported summary files written by `fm-agent:export`. If `<intent-msg>` is provided, include it at the beginning of the generated intent file.
 
 Rules:
 - If `--incremental` is not supplied, stop and tell the user to run `/fm-agent:run-incremental --incremental`.
-- If extra arguments are supplied, ignore them and run incremental analysis using the generated intent file.
+- If `<intent-msg>` is supplied, preserve it as user-provided intent and place it before the exported summaries in the generated intent file.
+- If multiple extra tokens are supplied after `--incremental`, treat all of them together as `<intent-msg>`.
 
 ## Invocation Modes
 
 This file defines two explicit procedures:
 
-- **Default direct-user mode:** the normal `/fm-agent:run-incremental --incremental` procedure for direct user invocations. It generates an intent file and launches FM-Agent in the background.
+- **Default direct-user mode:** the normal `/fm-agent:run-incremental --incremental [<intent-msg>]` procedure for direct user invocations. It generates an intent file and launches FM-Agent in the background.
 - **Orchestration mode:** a dedicated one-round verification procedure that `fm-agent:auto-fix` must follow when it needs deterministic incremental verification. It runs synchronously.
 
 Mode selection is by entrypoint, not by implicit runtime caller detection:
@@ -81,7 +83,7 @@ Rules:
 
 ### Step 3: Generate Incremental Intent File
 
-Generate the intent file from the export summaries for commits between the last analyzed commit and the current commit.
+Generate the intent file from any optional user-provided intent message and the export summaries for commits between the last analyzed commit and the current commit.
 
 1. Read the base commit id from the last line of `fm_agent/version.log`:
 
@@ -108,7 +110,7 @@ git rev-parse --short <commit>
 test -r "fm_agent_plugin/export-<short-commit>-summary.md"
 ```
 
-5. Concatenate all matching summary files into a generated intent file. Use the short form of the base and current commit ids in the file name:
+5. Concatenate the optional `<intent-msg>` and all matching summary files into a generated intent file. Use the short form of the base and current commit ids in the file name:
 
 ```bash
 mkdir -p fm_agent_plugin
@@ -117,6 +119,14 @@ mkdir -p fm_agent_plugin
   echo
   echo "Base analyzed commit: <base-commit>"
   echo "Current commit: <current-commit>"
+  echo
+  if [ -n "<intent-msg>" ]; then
+    echo "## User-provided intent"
+    echo
+    printf '%s\n' "<intent-msg>"
+    echo
+  fi
+  echo "## Exported commit summaries"
   echo
   echo "Generated from exported summaries in chronological order."
   echo

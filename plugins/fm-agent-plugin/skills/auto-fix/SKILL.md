@@ -1,7 +1,7 @@
 ---
 name: FM-Agent-Auto-Fix
 description: Use when the user asks to run the FM-Agent verification-repair loop for the current project.
-version: 0.1.1
+version: 0.2.0
 allowed-tools: Write,Bash,AskUserQuestion,Skill,Task
 ---
 
@@ -13,15 +13,19 @@ This skill owns the verification-repair-review loop for FM-Agent. It enforces th
 
 The reviewer agent's structured return envelope is the control signal for the loop after the initial FM-Agent verification. Do **not** infer the repair outcome from `git diff` or the coding agent's self-report.
 
-## Argument: `<max-iterations>`
+## Argument: `<intent-msg>` (optional)
 
-This skill requires one argument:
+This skill takes one optional argument:
 
-- `<max-iterations>`: the maximum number of coding-agent repair rounds allowed for this session
+- `<intent-msg>`: optional user-provided intent message describing what changed or what should be analyzed
 
-Manual invocation must provide `<max-iterations>` explicitly. If it is missing, ask the user for the maximum number of repair rounds before starting the loop.
+If `<intent-msg>` is provided and the project uses incremental verification, pass it to `fm-agent:run-incremental --incremental <intent-msg>`.
 
-Validate `<max-iterations>` before doing anything else:
+## Repair Round Limit
+
+Before starting the loop, ask the user for the maximum number of coding-agent repair rounds allowed for this session.
+
+Validate the answer before doing anything else:
 
 - It must be a positive integer.
 - If it is missing, zero, negative, or not an integer, ask the user for a positive integer before starting any session state changes.
@@ -124,7 +128,7 @@ Before verification:
 Invoke the split run skills as the execution primitive for this step.
 
 - For full-project analysis, invoke `fm-agent:run-full` and require it to follow its documented **orchestration mode** for one full-project verification round.
-- For incremental analysis, invoke `fm-agent:run-incremental --incremental` so the run-incremental skill generates the intent file from exported summaries between the last analyzed commit in `fm_agent/version.log` and the current `HEAD`.
+- For incremental analysis, invoke `fm-agent:run-incremental --incremental <intent-msg>` when `<intent-msg>` was provided; otherwise invoke `fm-agent:run-incremental --incremental`. The run-incremental skill generates the intent file from any provided intent message plus exported summaries between the last analyzed commit in `fm_agent/version.log` and the current `HEAD`.
 
 Do not use the default direct-user background flow from either run skill; the auto-fix orchestrator depends on the selected run skill's synchronous completion and artifact-readiness contract before continuing.
 
