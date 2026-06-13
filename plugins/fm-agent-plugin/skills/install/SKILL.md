@@ -72,7 +72,8 @@ FM-Agent installed successfully.
 
 Next steps:
 /fm-agent:config - Configure FM-Agent settings
-/fm-agent:run - Run FM-Agent for current codebase
+/fm-agent:run-full - Run full-project FM-Agent analysis for current codebase
+/fm-agent:run-incremental --incremental - Run incremental FM-Agent analysis for current codebase
 /fm-agent:diagnose - Diagnose bugs found by FM-Agent
 ```
 

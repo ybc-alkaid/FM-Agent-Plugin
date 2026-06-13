@@ -1,7 +1,7 @@
 ---
 name: FM-Agent-Help
 description: Use when the user asks to "fm-agent help", "how to use fm-agent", "fm-agent usage", "fm-agent commands", or needs information about FM-Agent plugin capabilities.
-version: 0.2.5
+version: 0.3.0
 ---
 
 Provide help and usage information for the FM-Agent plugin.
@@ -16,7 +16,8 @@ This plugin integrates FM-Agent into Claude Code or codex for automated code rea
 |---------|-------------|
 | `/fm-agent:install` | Clone FM-Agent to the plugin data directory |
 | `/fm-agent:config` | Show/modify FM-Agent configuration |
-| `/fm-agent:run` | Execute FM-Agent analysis on current project (background) |
+| `/fm-agent:run-full` | Execute full-project FM-Agent analysis on current project (background) |
+| `/fm-agent:run-incremental` | Execute incremental FM-Agent analysis on current project (background) |
 | `/fm-agent:diagnose` | View bug analysis results |
 | `/fm-agent:auto-fix` | Run verification-repair loop for the whole codebase |
 | `/fm-agent:export` | Export current conversation after a git commit |
@@ -46,16 +47,26 @@ Workflow:
 - `LLM_MODEL` - Default model used by FM-Agent (default: `anthropic/claude-sonnet-4.6`)
 - `OPENCODE_MODEL_PROVIDER` - Model provider used by OpenCode (default: `openrouter`)
 
-## run
+## run-full
 
-Execute FM-Agent from the plugin data directory to analyze the current project directory (`./`):
+Execute full-project FM-Agent analysis from the plugin data directory against the current project directory (`./`):
 - Verify `$HOME/.fm-agent-plugin/.env` exists and contains the API key (otherwise direct the user to `/fm-agent:config`)
-- Optionally runs incremental analysis with an intent file (`--incremental <intent-file>`), or with a generated intent file when `--incremental` is supplied without a file. Generated intent combines export summaries for commits after the last analyzed commit recorded in `fm_agent/version.log` through `HEAD`.
 - If `./fm_agent/` already exists, ask the user whether to **resume** (continue the previous run with `--resume`) or **start fresh** (run without `--resume`; FM-Agent handles prior-output cleanup).
 - Launch as a background task so the session is not blocked
 - Schedule periodic polling via the `loop` skill to detect completion, then notify the user with success or failure.
 
-The skill also exposes an **orchestration mode** used exclusively by `/fm-agent:auto-fix` to run a single deterministic verification round synchronously.
+The skill also exposes an **orchestration mode** used by `/fm-agent:auto-fix` to run a single deterministic full-project verification round synchronously.
+
+## run-incremental
+
+Execute incremental FM-Agent analysis from the plugin data directory against the current project directory (`./`):
+- Takes one argument: `--incremental`
+- Verifies `$HOME/.fm-agent-plugin/.env` exists and contains the API key (otherwise direct the user to `/fm-agent:config`)
+- Generates the intent file from export summaries for commits after the last analyzed commit recorded in `fm_agent/version.log` through `HEAD`
+- Runs FM-Agent with `--incremental <generated-intent-file>`
+- Launches as a background task so the session is not blocked
+
+The skill also exposes an **orchestration mode** used by `/fm-agent:auto-fix` to run a single deterministic incremental verification round synchronously.
 
 ## diagnose
 
@@ -70,7 +81,7 @@ Run the FM-Agent verification-repair-review loop with `/fm-agent:auto-fix <max-i
 
 Usage and constraints:
 - The loop starts from the current project working tree
-- The loop runs one FM-Agent verification round first: full-project analysis if `fm_agent/` is missing, or incremental analysis if `fm_agent/` and `fm_agent/version.log` exist
+- The loop runs one FM-Agent verification round first: `run-full` if `fm_agent/` is missing, or `run-incremental --incremental` if `fm_agent/` and `fm_agent/version.log` exist
 - If FM-Agent reports bugs, the plugin launches one dedicated coding-agent repair sub-session for the full bug batch
 - After each repair round, the plugin launches one dedicated reviewer sub-session to decide whether the reported bugs are fixed
 - If the reviewer passes the repair, the loop exits; if the reviewer returns feedback, the next coding-agent round receives that feedback and continues repairing

@@ -37,7 +37,8 @@ FM-Agent analysis needs to write opencode db file `~/.local/share/opencode/openc
 | `/fm-agent:install` | Clone FM-Agent to the plugin data directory |
 | `/fm-agent:config` | Show/modify FM-Agent configuration |
 | `/fm-agent:auto-fix` | Run FM-Agent verification-repair loop for the whole codebase |
-| `/fm-agent:run` | Execute FM-Agent analysis on current project without repairing bugs (background) |
+| `/fm-agent:run-full` | Execute full-project FM-Agent analysis on current project without repairing bugs (background) |
+| `/fm-agent:run-incremental` | Execute incremental FM-Agent analysis on current project without repairing bugs (background) |
 | `/fm-agent:diagnose` | View bug analysis results |
 | `/fm-agent:help` | Show help information |
 
@@ -71,7 +72,7 @@ Run the FM-Agent verification-repair-review loop with `/fm-agent:auto-fix <max-i
 
 Usage and constraints:
 - The loop starts from the current project working tree
-- The loop runs one FM-Agent verification round first: full-project analysis if `fm_agent/` is missing, or incremental analysis if `fm_agent/` and `fm_agent/version.log` exist
+- The loop runs one FM-Agent verification round first: `run-full` if `fm_agent/` is missing, or `run-incremental --incremental` if `fm_agent/` and `fm_agent/version.log` exist
 - If FM-Agent reports bugs, the plugin launches one dedicated coding-agent repair sub-session for the full bug batch
 - After each repair round, the plugin launches one dedicated reviewer sub-session to decide whether the reported bugs are fixed
 - If the reviewer passes the repair, the loop exits; if the reviewer returns feedback, the next coding-agent round receives that feedback and continues repairing
@@ -83,16 +84,26 @@ Session artifacts live under `./fm_agent_plugin/`:
 - `./fm_agent_plugin/auto-fix-<session-id>.md` - Human-readable session log
 - `./fm_agent_plugin/auto-fix-active.json` - Active-session lock
 
-### run
+### run-full
 
-Execute FM-Agent from the plugin data directory to analyze the current project directory (`./`):
+Execute full-project FM-Agent analysis from the plugin data directory against the current project directory (`./`):
 - Verify `$HOME/.fm-agent-plugin/.env` exists and contains the API key (otherwise direct the user to `/fm-agent:config`)
-- Optional incremental analysis is supported with an intent file: `/fm-agent:run --incremental <intent-file>`. If `/fm-agent:run --incremental` is used without a file, the skill generates one from exported summaries for commits after the last analyzed commit recorded in `fm_agent/version.log` through `HEAD`.
 - For full-project analysis, if `./fm_agent/` already exists, ask the user whether to **resume** (continue with `--resume`) or **start fresh** (run without `--resume`; FM-Agent handles prior-output cleanup).
 - Launch as a background task so the session is not blocked
 - Schedule periodic polling via the `loop` skill to detect completion, then notify the user with success or failure.
 
-The skill also exposes an **orchestration mode** used exclusively by `/fm-agent:auto-fix` to run a single deterministic verification round synchronously, with no resume/fresh prompts and no background polling.
+The skill also exposes an **orchestration mode** used exclusively by `/fm-agent:auto-fix` to run a single deterministic full-project verification round synchronously, with no resume/fresh prompts and no background polling.
+
+### run-incremental
+
+Execute incremental FM-Agent analysis from the plugin data directory against the current project directory (`./`):
+- Usage: `/fm-agent:run-incremental --incremental`
+- Verify `$HOME/.fm-agent-plugin/.env` exists and contains the API key (otherwise direct the user to `/fm-agent:config`)
+- Generate the intent file from exported summaries for commits after the last analyzed commit recorded in `fm_agent/version.log` through `HEAD`
+- Run FM-Agent with `--incremental <generated-intent-file>`
+- Launch as a background task so the session is not blocked
+
+The skill also exposes an **orchestration mode** used exclusively by `/fm-agent:auto-fix` to run a single deterministic incremental verification round synchronously, with no background polling.
 
 ### diagnose
 

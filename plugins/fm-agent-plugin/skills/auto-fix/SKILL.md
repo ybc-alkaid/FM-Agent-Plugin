@@ -121,12 +121,12 @@ Before verification:
 - append a verification header to the human-readable log
 - record whether the selected verification mode is `full-project` or `incremental`
 
-Invoke `fm-agent:run` as the execution primitive for this step.
+Invoke the split run skills as the execution primitive for this step.
 
-- For full-project analysis, require `fm-agent:run` to follow its documented **orchestration mode** for one full-project verification round.
-- For incremental analysis, invoke `fm-agent:run --incremental` without an intent file so the run skill generates the intent file from exported summaries between the last analyzed commit in `fm_agent/version.log` and the current `HEAD`.
+- For full-project analysis, invoke `fm-agent:run-full` and require it to follow its documented **orchestration mode** for one full-project verification round.
+- For incremental analysis, invoke `fm-agent:run-incremental --incremental` so the run-incremental skill generates the intent file from exported summaries between the last analyzed commit in `fm_agent/version.log` and the current `HEAD`.
 
-Do not use the default direct-user background flow from `fm-agent:run`; the auto-fix orchestrator depends on the run skill's synchronous completion and artifact-readiness contract before continuing.
+Do not use the default direct-user background flow from either run skill; the auto-fix orchestrator depends on the selected run skill's synchronous completion and artifact-readiness contract before continuing.
 
 If the FM-Agent run fails, or if the round completes without producing readable verification artifacts, update the session to:
 
