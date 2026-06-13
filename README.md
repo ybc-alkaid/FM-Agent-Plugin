@@ -87,11 +87,12 @@ Session artifacts live under `./fm_agent_plugin/`:
 
 Execute FM-Agent from the plugin data directory to analyze the current project directory (`./`):
 - Verify `$HOME/.fm-agent-plugin/.env` exists and contains the API key (otherwise direct the user to `/fm-agent:config`)
-- If `./fm_agent/` already exists, ask the user whether to **resume** or **start fresh**. **Resume (`--resume`) is not yet implemented** — when chosen, the skill stops and asks the user whether to start fresh instead.
+- Optional incremental analysis is supported with an intent file and base commit: `/fm-agent:run --incremental <intent-file> --old-commit <base-commit>`. FM-Agent analyzes functions changed between the base commit and the current working tree.
+- For full-project analysis, if `./fm_agent/` already exists, ask the user whether to **resume** (continue with `--resume`) or **start fresh** (discard the existing `fm_agent/` directory and re-run).
 - Launch as a background task so the session is not blocked
 - Schedule periodic polling via the `loop` skill to detect completion, then notify the user with success or failure.
 
-The skill also exposes an **orchestration mode** used exclusively by `/fm-agent:auto-fix` to run a single deterministic full-project verification round synchronously, with no resume/fresh prompts and no background polling.
+The skill also exposes an **orchestration mode** used exclusively by `/fm-agent:auto-fix` to run a single deterministic full-project verification round synchronously, with no incremental mode, no resume/fresh prompts, and no background polling.
 
 ### diagnose
 

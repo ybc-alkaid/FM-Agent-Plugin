@@ -1,7 +1,7 @@
 ---
 name: FM-Agent-Help
 description: Use when the user asks to "fm-agent help", "how to use fm-agent", "fm-agent usage", "fm-agent commands", or needs information about FM-Agent plugin capabilities.
-version: 0.2.0
+version: 0.2.1
 ---
 
 Provide help and usage information for the FM-Agent plugin.
@@ -90,7 +90,7 @@ For each commit, the skill writes two files to `./fm_agent_plugin/` in the curre
 - `export-<COMMIT_ID>.md` — Full transcript of conversation turns between this commit and the previous one (or session start, if this is the first in-session commit)
 - `export-<COMMIT_ID>-summary.md` — Concise summary of the user's intent, decisions, and goal-level description of code changes
 
-After writing the export, the skill asks the user whether to run incremental FM-Agent analysis on the just-committed changes (`/fm-agent:run <COMMIT_ID>`). If multiple commits are made in a single session, the skill runs once per commit, scoping each export to the conversation turns belonging to that commit.
+After writing the export, the skill asks the user whether to run incremental FM-Agent analysis on the just-committed changes. If accepted, it invokes `/fm-agent:run --incremental ./fm_agent_plugin/export-<COMMIT_ID>-summary.md --old-commit <PARENT_SHA>`. If multiple commits are made in a single session, the skill runs once per commit, scoping each export to the conversation turns belonging to that commit.
 
 ## Prerequisites
 
